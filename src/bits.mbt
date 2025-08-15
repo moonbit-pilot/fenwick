@@ -59,11 +59,13 @@ pub fn Bits::from_bits(self : Bits) -> Int {
 
 ///|
 pub impl Show for Bits with to_string(self) {
-  fn go {
-    Rep(b) => b.to_string().repeat(3) + "..."
-    s => {
-      let (bs, b) = s.pat_match()
-      b.to_string() + go(bs)
+  fn go(s) {
+    match s {
+      Rep(b) => b.to_string().repeat(3) + "..."
+      _ => {
+        let (bs, b) = s.pat_match()
+        b.to_string() + go(bs)
+      }
     }
   }
 
@@ -179,9 +181,9 @@ pub fn Bits::clear(self : Bits, idx : Int) -> Bits {
 
 ///|
 fn test_helper(self : Bits, i : Int) -> Bool {
-  loop i, self.pat_match() {
-    0, (_bs, b) => b == I
-    k, (bs, _b) => continue k - 1, bs.pat_match()
+  loop (i, self.pat_match()) {
+    (0, (_bs, b)) => b == I
+    (k, (bs, _b)) => continue (k - 1, bs.pat_match())
   }
 }
 

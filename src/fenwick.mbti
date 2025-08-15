@@ -2,7 +2,7 @@
 package "CAIMEOX/fenwick"
 
 import(
-  "moonbitlang/core/immut/list"
+  "moonbitlang/core/list"
 )
 
 // Values
@@ -10,7 +10,7 @@ fn b2f(Int, Bits) -> Bits
 
 fn f2b(Int, Bits) -> Bits
 
-fn[T] interleave(@list.T[T], @list.T[T]) -> @list.T[T]
+fn[T] interleave(@list.List[T], @list.List[T]) -> @list.List[T]
 
 fn shift(Int, Bits) -> Bits
 

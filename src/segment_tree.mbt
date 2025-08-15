@@ -1,5 +1,5 @@
 ///|
-typealias @immut/list.T as List
+typealias @list.T as List
 
 ///|
 /// Represents a segment tree, a tree data structure used for storing information about intervals, or segments.
@@ -20,10 +20,10 @@ pub fn SegTree::empty() -> SegTree {
 /// Creates a new segment tree with the specified range.
 pub fn SegTree::new(rng : (Int, Int)) -> SegTree {
   match rng {
-    (a, b) if a == b => Branch(0, rng, Empty, Empty)
+    (a, b) if a == b => Branch(0, Range(a, b), Empty, Empty)
     (a, b) => {
       let mid = (a + b) / 2
-      Branch(0, rng, SegTree::new((a, mid)), SegTree::new((mid + 1, b)))
+      Branch(0, Range(a, b), SegTree::new((a, mid)), SegTree::new((mid + 1, b)))
     }
   }
 }
@@ -80,7 +80,7 @@ fn rq(self : SegTree, q : Range) -> Int {
 /// # Returns
 /// The value at the specified index.
 pub fn SegTree::get(self : SegTree, i : Index) -> Int {
-  self.rq((i, i))
+  self.rq(Range(i, i))
 }
 
 ///|
@@ -107,10 +107,21 @@ pub fn SegTree::set(self : SegTree, i : Index, v : Int) -> SegTree {
 /// # Returns
 /// A new list with elements interleaved from both input lists.
 pub fn[T] interleave(sel : List[T], other : List[T]) -> List[T] {
-  match (sel, other) {
-    (Nil, _) => Nil
-    (Cons(x, xs), ys) => Cons(x, interleave(ys, xs))
+  let arr1 = @list.List::to_array(sel)
+  let arr2 = @list.List::to_array(other)
+  let result = []
+  let len1 = arr1.length()
+  let len2 = arr2.length()
+  let max_len = if len1 > len2 { len1 } else { len2 }
+  for i = 0; i < max_len; i = i + 1 {
+    if i < len1 {
+      result.push(arr1[i])
+    }
+    if i < len2 {
+      result.push(arr2[i])
+    }
   }
+  @list.from_array(result)
 }
 
 ///|
@@ -123,10 +134,10 @@ pub fn[T] interleave(sel : List[T], other : List[T]) -> List[T] {
 /// A list representing the binary tree structure.
 fn b(i : Int) -> List[Int] {
   match i {
-    0 => Cons(2, Nil)
+    0 => @list.of([2])
     n =>
-      Int::until(1 << n, (1 << n) + (1 << (n - 1))).map(fn { x => x * 2 })
-      |> @immut/list.from_iter
+      Int::until(1 << n, (1 << n) + (1 << (n - 1))).map(fn(x) { x * 2 })
+      |> @list.from_iter
       |> interleave(b(n - 1))
   }
 }
@@ -141,7 +152,7 @@ fn b(i : Int) -> List[Int] {
 /// # Returns
 /// The shifted bits.
 pub fn shift(n : Int, se : Bits) -> Bits {
-  while_(even, shr, se.set(n))
+  while_(Bits::even, Bits::shr, se.set(n))
 }
 
 ///|
@@ -154,7 +165,7 @@ pub fn shift(n : Int, se : Bits) -> Bits {
 /// # Returns
 /// The converted bits.
 pub fn f2b(n : Int, se : Bits) -> Bits {
-  shift(n + 1, se) |> dec
+  shift(n + 1, se) |> Bits::dec
 }
 
 ///|
@@ -167,7 +178,7 @@ pub fn f2b(n : Int, se : Bits) -> Bits {
 /// # Returns
 /// The unshifted bits.
 pub fn unshift(n : Int, se : Bits) -> Bits {
-  while_(fn { x => not(x.test_helper(n)) }, shl, se) |> Bits::clear(_, n)
+  while_(fn(x) { not(x.test_helper(n)) }, Bits::shl, se) |> Bits::clear(_, n)
 }
 
 ///|
@@ -192,7 +203,7 @@ pub fn b2f(n : Int, se : Bits) -> Bits {
 /// # Returns
 /// The active parent bits.
 pub fn active_parent_binary(self : Bits) -> Bits {
-  while_(odd, shr, self.shr())
+  while_(Bits::odd, Bits::shr, self.shr())
 }
 
 ///|
@@ -224,11 +235,11 @@ pub fn at_lsb(self : Bits, f : (Bits) -> Bits) -> Bits {
 /// # Returns
 /// The previous segment bits.
 pub fn prev_segment_binary(self : Bits) -> Bits {
-  while_(even, shr, self).dec()
+  while_(Bits::even, Bits::shr, self).dec()
 }
 
 ///|
 test "x - lsb x" {
   let x = Bits::to_bits(26)
-  inspect(x.at_lsb(dec), content="...00011000")
+  inspect(x.at_lsb(Bits::dec), content="...00011000")
 }
