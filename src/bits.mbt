@@ -113,10 +113,10 @@ pub fn lsb(self : Bits) -> Bits {
 
 ///|
 test "lsb" {
-  inspect!(Bits::to_bits(26), content="...00011010")
-  inspect!(Bits::to_bits(26).lsb(), content="...00010")
-  inspect!(Bits::to_bits(24), content="...00011000")
-  inspect!(Bits::to_bits(24).lsb(), content="...0001000")
+  inspect(Bits::to_bits(26), content="...00011010")
+  inspect(Bits::to_bits(26).lsb(), content="...00010")
+  inspect(Bits::to_bits(24), content="...00011000")
+  inspect(Bits::to_bits(24).lsb(), content="...0001000")
 }
 
 ///|

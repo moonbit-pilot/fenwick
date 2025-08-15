@@ -1,5 +1,5 @@
 ///|
-typealias List[T] = @immut/list.T[T]
+typealias @immut/list.T as List
 
 ///|
 /// Represents a segment tree, a tree data structure used for storing information about intervals, or segments.
@@ -230,5 +230,5 @@ pub fn prev_segment_binary(self : Bits) -> Bits {
 ///|
 test "x - lsb x" {
   let x = Bits::to_bits(26)
-  inspect!(x.at_lsb(dec), content="...00011000")
+  inspect(x.at_lsb(dec), content="...00011000")
 }
